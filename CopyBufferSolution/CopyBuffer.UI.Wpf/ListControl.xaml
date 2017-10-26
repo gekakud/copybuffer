@@ -1,0 +1,37 @@
+﻿<UserControl x:Class="CopyBuffer.Ui.Wpf.ListControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CopyBuffer.Ui.Wpf"
+             xmlns:converters="clr-namespace:CopyBuffer.Ui.Wpf.Converters"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <converters:ItemTypeTostringConverer  x:Key="ItemTypeTostringConverer" />
+    </UserControl.Resources>
+    
+    <UserControl.DataContext>
+        <local:ListViewModel></local:ListViewModel>
+    </UserControl.DataContext>
+    
+    <ListBox Name="LeftListBox" ItemsSource="{Binding CopyList}" SelectedItem="{Binding SelectedItem}" HorizontalContentAlignment="Stretch" SelectionMode="Single">
+        <ListBox.ItemTemplate>
+            <DataTemplate>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="8" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Text="{Binding TextContent}"
+								   FontSize="14" HorizontalAlignment="Stretch" VerticalAlignment="Center" TextAlignment="Left" />
+                    <StackPanel Grid.Column="2" Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="{Binding ItemType,Converter={StaticResource ItemTypeTostringConverer}}"/>
+                    </StackPanel>
+                </Grid>
+            </DataTemplate>
+        </ListBox.ItemTemplate>
+    </ListBox>
+</UserControl>
