@@ -1,4 +1,5 @@
 ﻿using System;
+using CopyBuffer.ClipboardListener;
 using CopyBuffer.Service;
 using CopyBuffer.Service.Shared;
 using CopyBuffer.Ui.Wpf.Common;
@@ -16,12 +17,12 @@ namespace CopyBuffer.Ui.Wpf
 
         // MEF DI ??[Import]
         private readonly ICopyBufferService _bufferService;
-
+        private readonly ListenerService _listenerService;
         public NotifyIconViewModel()
         {
             _bufferService = CopyBufferService.Instance;
             _bufferService.Start();
-            
+            _listenerService = ListenerService.Instance;
             ShowWindowCommand = new Command(ShowWindowInternal);
             HideWindowCommand = new Command(HideWindowInternal);
             ExitApplicationCommand = new Command(ExitApplicationInternal);
@@ -63,6 +64,7 @@ namespace CopyBuffer.Ui.Wpf
         public void Dispose()
         {
             _bufferService?.Dispose();
+            _listenerService.Dispose();
             _keyEventHandler.UnsubscribeFromEvent();
         }
     }
