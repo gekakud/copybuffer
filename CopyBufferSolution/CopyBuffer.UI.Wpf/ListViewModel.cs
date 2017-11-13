@@ -4,9 +4,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using CopyBuffer.Core;
 using CopyBuffer.Service;
 using CopyBuffer.Service.Shared;
 using CopyBuffer.Ui.Wpf.Common;
+
 
 namespace CopyBuffer.Ui.Wpf
 {
@@ -57,7 +59,6 @@ namespace CopyBuffer.Ui.Wpf
             ct = cts.Token;
 
             service = CopyBufferService.Instance;
-
             CopyList = new List<BufferItem>();
             UpdateSortedSet();
             Task.Run(() => CopyListRefreshTask()

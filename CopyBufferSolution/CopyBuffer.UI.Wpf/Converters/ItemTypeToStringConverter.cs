@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Windows.Data;
+using CopyBuffer.Core;
 using CopyBuffer.Service.Shared;
 using MaterialDesignThemes.Wpf;
 

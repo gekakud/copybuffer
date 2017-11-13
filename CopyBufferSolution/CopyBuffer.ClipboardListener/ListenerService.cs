@@ -1,27 +1,27 @@
 ﻿using System;
-using System.Drawing;
-using System.Collections;
-using System.ComponentModel;
 using System.Windows.Forms;
-using System.Data;
-using System.Text.RegularExpressions;
 using System.Diagnostics;
-using System.IO;
-
 using RAD.ClipMon.Win32;
-using RAD.Windows;
-
+using System.Collections.Concurrent;
+using CopyBuffer.Service.Shared;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using CopyBuffer.Core;
 
 namespace CopyBuffer.ClipboardListener
 {
-    public class ListenerService : Form , IDisposable
+    public class ListenerService : Form ,ICopyBufferService, IDisposable
     {
-        IntPtr _clipboardViewerNext;
+        #region Data Members
 
-        public ListenerService()
-        {
-            RegisterClipboardViewer();
-        }
+        private readonly ConcurrentBag<BufferItem> _copyBuffer;
+
+        private IntPtr _clipboardViewerNext;
+
+        #endregion
+
+        #region Singleton Instance
 
         private static ListenerService _instance;
 
@@ -36,9 +36,21 @@ namespace CopyBuffer.ClipboardListener
                 }
                 return _instance;
             }
-          
+
         }
 
+        #endregion
+
+        #region CTOR
+
+        public ListenerService()
+        {
+            _copyBuffer = new ConcurrentBag<BufferItem>();
+        }
+
+        #endregion
+
+        #region Events Un/Registration
 
         /// <summary>
         /// Register this form as a Clipboard Viewer application
@@ -56,9 +68,13 @@ namespace CopyBuffer.ClipboardListener
             User32.ChangeClipboardChain(this.Handle, _clipboardViewerNext);
         }
 
+        #endregion
+
+        #region Event Handlers
+
         protected override void WndProc(ref Message m)
         {
-            switch ((Msgs)m.Msg)
+            switch ((Msgs) m.Msg)
             {
                 //
                 // The WM_DRAWCLIPBOARD message is sent to the first window 
@@ -70,7 +86,7 @@ namespace CopyBuffer.ClipboardListener
 
                     Debug.WriteLine("WindowProc DRAWCLIPBOARD: " + m.Msg, "WndProc");
 
-                     GetClipboardData();
+                    GetClipboardData();
 
                     //
                     // Each window that receives the WM_DRAWCLIPBOARD message 
@@ -127,10 +143,9 @@ namespace CopyBuffer.ClipboardListener
 
         }
 
-        public new void Dispose()
-        {
-            UnregisterClipboardViewer();
-        }
+        #endregion
+
+        #region Private Methods
 
         /// <summary>
         /// Show the clipboard contents in the window 
@@ -148,7 +163,7 @@ namespace CopyBuffer.ClipboardListener
             {
                 iData = Clipboard.GetDataObject();
             }
-            catch (System.Runtime.InteropServices.ExternalException externEx)
+            catch (ExternalException externEx)
             {
                 // Copying a field definition in Access 2002 causes this sometimes?
                 Debug.WriteLine("InteropServices.ExternalException: {0}", externEx.Message);
@@ -162,11 +177,67 @@ namespace CopyBuffer.ClipboardListener
 
             if (iData.GetDataPresent(DataFormats.Text))
             {
-               string text  = (string)iData.GetData(DataFormats.Text);
+                var itemStr = (string) iData.GetData(DataFormats.Text);
+                var item = new BufferItem
+                {
+                    TextContent = itemStr,
+                    TimeStamp = DateTime.Now,
+                    ItemType = itemStr == null ? BufferItemType.Image : BufferItemType.Text
+                };
 
-                Debug.WriteLine((string)iData.GetData(DataFormats.Text));
+                if (item.ItemType == BufferItemType.Text && item.TextContent != null)
+                {
+                    _copyBuffer.Add(item);
+                }
+
+                Debug.WriteLine((string) iData.GetData(DataFormats.Text));
             }
         }
+
+        #endregion
+
+        #region ICopyBufferService
+
+        public void Start()
+        {
+            RegisterClipboardViewer();
+        }
+
+        public void Stop()
+        {
+            UnregisterClipboardViewer();
+        }
+
+        public void ClearBufferHistory()
+        {
+            BufferItem someItem;
+            while (!_copyBuffer.IsEmpty)
+            {
+                _copyBuffer.TryTake(out someItem);
+            }
+        }
+
+        public List<BufferItem> GetBufferedHistory()
+        {
+            return _copyBuffer.ToList();
+        }
+
+        public void SetItemToClipboard(BufferItem p_item)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region IDisposable
+
+        public new void Dispose()
+        {
+            UnregisterClipboardViewer();
+        }
+
+        #endregion
+
     }
 
 }

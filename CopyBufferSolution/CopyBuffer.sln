@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CopyBuffer.Service", "CopyB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CopyBuffer.ClipboardListener", "CopyBuffer.ClipboardListener\CopyBuffer.ClipboardListener.csproj", "{C563ED15-570E-4EFD-8357-D4B4AABC6263}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CopyBuffer.Core", "CopyBuffer.Core\CopyBuffer.Core.csproj", "{6915D7DD-224B-429D-B5EE-819CB5192993}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{C563ED15-570E-4EFD-8357-D4B4AABC6263}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C563ED15-570E-4EFD-8357-D4B4AABC6263}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C563ED15-570E-4EFD-8357-D4B4AABC6263}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6915D7DD-224B-429D-B5EE-819CB5192993}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6915D7DD-224B-429D-B5EE-819CB5192993}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6915D7DD-224B-429D-B5EE-819CB5192993}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6915D7DD-224B-429D-B5EE-819CB5192993}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

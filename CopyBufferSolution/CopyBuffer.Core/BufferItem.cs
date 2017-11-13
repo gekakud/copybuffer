@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Media.Imaging;
 
-namespace CopyBuffer.Service.Shared
+namespace CopyBuffer.Core
 {
     public struct BufferItem
     {

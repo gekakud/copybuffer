@@ -62,14 +62,20 @@
     <ManifestKeyFile>CopyBuffer.Ui.Wpf_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <GenerateManifests>true</GenerateManifests>
+    <GenerateManifests>false</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>
     </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FMUtils.KeyboardHook, Version=1.0.140.2145, Culture=neutral, PublicKeyToken=1acd76c568cde84e, processorArchitecture=MSIL">
@@ -143,11 +149,20 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Properties\app.manifest" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="stack_icon.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CopyBuffer.ClipboardListener\CopyBuffer.ClipboardListener.csproj">
+      <Project>{c563ed15-570e-4efd-8357-d4b4aabc6263}</Project>
+      <Name>CopyBuffer.ClipboardListener</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CopyBuffer.Core\CopyBuffer.Core.csproj">
+      <Project>{6915d7dd-224b-429d-b5ee-819cb5192993}</Project>
+      <Name>CopyBuffer.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CopyBuffer.Service\CopyBuffer.Service.csproj">
       <Project>{283cb1da-3ccb-4657-8118-96d99e2f6565}</Project>
       <Name>CopyBuffer.Service</Name>

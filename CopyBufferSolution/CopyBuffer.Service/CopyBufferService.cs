@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using CopyBuffer.Core;
 using CopyBuffer.Service.Shared;
 
 namespace CopyBuffer.Service

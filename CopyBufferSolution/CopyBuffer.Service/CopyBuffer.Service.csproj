@@ -64,12 +64,16 @@
     <Compile Include="ClipboardWrapper.cs" />
     <Compile Include="CopyBufferService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Shared\BufferItem.cs" />
-    <Compile Include="Shared\ICopyBufferService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CopyBuffer.Core\CopyBuffer.Core.csproj">
+      <Project>{6915d7dd-224b-429d-b5ee-819cb5192993}</Project>
+      <Name>CopyBuffer.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
