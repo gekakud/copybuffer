@@ -187,3 +187,5 @@ FakesAssemblies/
 GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
+/CopyBufferSolution/Exteranl dlls/rad.notificationareaicon.dll
+/CopyBufferSolution/CopyBuffer.UI.Wpf/Properties/app.manifest

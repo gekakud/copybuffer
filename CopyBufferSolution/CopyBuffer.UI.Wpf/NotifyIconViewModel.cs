@@ -17,7 +17,7 @@ namespace CopyBuffer.Ui.Wpf
 
         // MEF DI ??[Import]
         private readonly ICopyBufferService _bufferService;
-        private readonly ListenerService _listenerService;
+        private readonly ICopyBufferService _listenerService;
         public NotifyIconViewModel()
         {
             _bufferService = CopyBufferService.Instance;
@@ -34,7 +34,7 @@ namespace CopyBuffer.Ui.Wpf
         {
             if (Application.Current.MainWindow == null)
             {
-                Application.Current.MainWindow = new MainWindow(_bufferService);
+                Application.Current.MainWindow = new MainWindow(_listenerService);
                 Application.Current.MainWindow.Show();
                 Application.Current.MainWindow.Activate();
                 Application.Current.MainWindow.Focusable = true;
