@@ -10,28 +10,41 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <converters:ItemTypeTostringConverer  x:Key="ItemTypeTostringConverer" />
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </UserControl.Resources>
     
     <UserControl.DataContext>
         <local:ListViewModel></local:ListViewModel>
     </UserControl.DataContext>
-    
-    <ListBox Name="LeftListBox" ItemsSource="{Binding CopyList}" SelectedItem="{Binding SelectedItem}" HorizontalContentAlignment="Stretch" SelectionMode="Single">
-        <ListBox.ItemTemplate>
-            <DataTemplate>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="8" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Text="{Binding TextContent}"
-								   FontSize="14" HorizontalAlignment="Stretch" VerticalAlignment="Center" TextAlignment="Left" />
-                    <StackPanel Grid.Column="2" Orientation="Horizontal">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="2"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TextBlock HorizontalAlignment="Stretch" Height="25" Text="{Binding FirstItem.TextContent}"></TextBlock>
+        <Rectangle Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"  Margin="0" Fill="Gray" />
+        <ListBox Name="LeftListBox" Grid.Row="2"
+             ItemsSource="{Binding CopyList}"
+             SelectedItem="{Binding SelectedItem}"
+             HorizontalContentAlignment="Stretch" SelectionMode="Single">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
                         <materialDesign:PackIcon Kind="{Binding ItemType,Converter={StaticResource ItemTypeTostringConverer}}"/>
-                    </StackPanel>
-                </Grid>
-            </DataTemplate>
-        </ListBox.ItemTemplate>
-    </ListBox>
+                        <TextBlock Grid.Column="2" TextTrimming="WordEllipsis"
+                               Text="{Binding TextContent}"
+                               FontSize="14" HorizontalAlignment="Stretch" VerticalAlignment="Center" TextAlignment="Left" />
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid> 
+  
+    
 </UserControl>

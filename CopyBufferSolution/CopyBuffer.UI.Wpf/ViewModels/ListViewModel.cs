@@ -15,9 +15,22 @@ namespace CopyBuffer.Ui.Wpf
     public class ListViewModel: BaseViewModel,IDisposable
     {
         public Action CloseAction { get; set; }
+
+        #region Data Members
+
         private SortedSet<BufferItem> _sortedSet;
         private ICopyBufferService service;
         private bool _firstSet = true;
+        private List<BufferItem> _list;
+        private BufferItem _selectedItem;
+        private CancellationTokenSource cts;
+        private CancellationToken ct;
+
+        #endregion
+
+        #region Properties
+
+        public BufferItem FirstItem => CopyList.First();
 
         public List<BufferItem> CopyList
         {
@@ -40,15 +53,14 @@ namespace CopyBuffer.Ui.Wpf
                 _selectedItem = value;
 
                 service.SetItemToClipboard(_selectedItem);
-                
+
                 Application.Current.MainWindow.Close();
             }
         }
 
-        private List<BufferItem> _list;
-        private BufferItem _selectedItem;
-        private CancellationTokenSource cts;
-        private CancellationToken ct;
+        #endregion
+
+        #region Ctor
 
         //how to pass ICopyService to here???
         //how  I know when ListControl is disposed to cancel the task
@@ -65,6 +77,10 @@ namespace CopyBuffer.Ui.Wpf
                 , cts.Token);
         }
 
+        #endregion
+
+        #region Private Methods
+
         private void CopyListRefreshTask()
         {
             while (true)
@@ -78,7 +94,7 @@ namespace CopyBuffer.Ui.Wpf
                 if (CopyList.Count == service.GetBufferedHistory().Count)
                     continue;
 
-                UpdateSortedSet();              
+                UpdateSortedSet();
             }
         }
 
@@ -89,7 +105,10 @@ namespace CopyBuffer.Ui.Wpf
                 _sortedSet.Add(bufferItem);
             }
             CopyList = _sortedSet.Select(r => r).ToList();
+            OnPropertyChanged("FirstItem");
         }
+
+        #endregion
 
         public void Dispose()
         {
