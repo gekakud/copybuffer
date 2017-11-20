@@ -25,12 +25,17 @@ namespace CopyBuffer.Ui.Wpf
         private BufferItem _selectedItem;
         private CancellationTokenSource cts;
         private CancellationToken ct;
+        private BufferItem _firstItem;
 
         #endregion
 
         #region Properties
 
-        public BufferItem FirstItem => CopyList.First();
+        public BufferItem FirstItem
+        {
+            get { return _firstItem; }
+            set { SetProperty(ref _firstItem, value);}
+        }
 
         public List<BufferItem> CopyList
         {
@@ -105,7 +110,9 @@ namespace CopyBuffer.Ui.Wpf
                 _sortedSet.Add(bufferItem);
             }
             CopyList = _sortedSet.Select(r => r).ToList();
-            OnPropertyChanged("FirstItem");
+            FirstItem = CopyList.Count > 0 ? CopyList.First(): new BufferItem(); 
+           // CopyList.Remove(_sortedSet.First());
+        
         }
 
         #endregion

@@ -7,11 +7,10 @@ namespace CopyBuffer.Ui.Wpf
     /// </summary>
     public partial class ListControl
     {
-        public ListViewModel _lm;
         public ListControl()
         {
-            _lm = new ListViewModel();
             InitializeComponent();
+          
         }
     }
 }

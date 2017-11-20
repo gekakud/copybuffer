@@ -23,6 +23,7 @@ namespace CopyBuffer.Ui.Wpf
             _bufferService = CopyBufferService.Instance;
             _bufferService.Start();
             _listenerService = ListenerService.Instance;
+           // _listenerService.Start();
             ShowWindowCommand = new Command(ShowWindowInternal);
             HideWindowCommand = new Command(HideWindowInternal);
             ExitApplicationCommand = new Command(ExitApplicationInternal);

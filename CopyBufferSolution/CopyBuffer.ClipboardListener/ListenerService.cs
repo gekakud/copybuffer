@@ -180,9 +180,9 @@ namespace CopyBuffer.ClipboardListener
                 var itemStr = (string) iData.GetData(DataFormats.Text);
                 var item = new BufferItem
                 {
-                    TextContent = itemStr,
+                    TextContent = itemStr.Trim(),
                     TimeStamp = DateTime.Now,
-                    ItemType = itemStr == null ? BufferItemType.Image : BufferItemType.Text
+                    ItemType = BufferItemType.Text
                 };
 
                 if (item.ItemType == BufferItemType.Text && item.TextContent != null)

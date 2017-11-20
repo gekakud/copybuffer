@@ -11,40 +11,43 @@
     <UserControl.Resources>
         <converters:ItemTypeTostringConverer  x:Key="ItemTypeTostringConverer" />
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        
+        <DataTemplate x:Key="ItemTemplate">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <materialDesign:PackIcon Kind="{Binding ItemType,Converter={StaticResource ItemTypeTostringConverer}}"/>
+                <TextBlock Grid.Column="2" TextTrimming="WordEllipsis"
+                               Text="{Binding TextContent}"
+                               FontSize="14" HorizontalAlignment="Stretch" VerticalAlignment="Center" TextAlignment="Left" />
+            </Grid>
+        </DataTemplate>
+
     </UserControl.Resources>
-    
+
     <UserControl.DataContext>
         <local:ListViewModel></local:ListViewModel>
     </UserControl.DataContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="2"/>
+            <RowDefinition Height="1"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <TextBlock HorizontalAlignment="Stretch" Height="25" Text="{Binding FirstItem.TextContent}"></TextBlock>
+        <!--<TextBlock HorizontalAlignment="Stretch" Height="25" Text="{Binding FirstItem.TextContent}"></TextBlock>-->
+        <ContentControl Margin="8,5,5,5" ContentTemplate="{StaticResource ItemTemplate}" 
+                        Content="{Binding Path=FirstItem}" />
         <Rectangle Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"  Margin="0" Fill="Gray" />
         <ListBox Name="LeftListBox" Grid.Row="2"
-             ItemsSource="{Binding CopyList}"
-             SelectedItem="{Binding SelectedItem}"
-             HorizontalContentAlignment="Stretch" SelectionMode="Single">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="8" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <materialDesign:PackIcon Kind="{Binding ItemType,Converter={StaticResource ItemTypeTostringConverer}}"/>
-                        <TextBlock Grid.Column="2" TextTrimming="WordEllipsis"
-                               Text="{Binding TextContent}"
-                               FontSize="14" HorizontalAlignment="Stretch" VerticalAlignment="Center" TextAlignment="Left" />
-                    </Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
+                 ItemsSource="{Binding CopyList}"
+                 SelectedItem="{Binding SelectedItem}"
+                 ItemTemplate="{StaticResource ItemTemplate}"
+                 HorizontalContentAlignment="Stretch" SelectionMode="Single">
         </ListBox>
-    </Grid> 
-  
-    
+    </Grid>
+
+
 </UserControl>
