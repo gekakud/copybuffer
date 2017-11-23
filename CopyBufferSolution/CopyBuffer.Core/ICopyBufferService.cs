@@ -6,6 +6,8 @@ namespace CopyBuffer.Service.Shared
 {
     public interface ICopyBufferService:IDisposable
     {
+        event EventHandler ClibordNewMessage;
+
         void Start();
         void Stop();
         void ClearBufferHistory();

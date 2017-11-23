@@ -19,7 +19,7 @@ namespace CopyBuffer.Ui.Wpf
         #region Data Members
 
         private SortedSet<BufferItem> _sortedSet;
-        private ICopyBufferService service;
+        private ICopyBufferService _service;
         private bool _firstSet = true;
         private List<BufferItem> _list;
         private BufferItem _selectedItem;
@@ -57,7 +57,7 @@ namespace CopyBuffer.Ui.Wpf
             {
                 _selectedItem = value;
 
-                service.SetItemToClipboard(_selectedItem);
+                _service.SetItemToClipboard(_selectedItem);
 
                 Application.Current.MainWindow.Close();
             }
@@ -69,49 +69,42 @@ namespace CopyBuffer.Ui.Wpf
 
         //how to pass ICopyService to here???
         //how  I know when ListControl is disposed to cancel the task
-        public ListViewModel()
+        public ListViewModel(ICopyBufferService service)
         {
             _sortedSet = new SortedSet<BufferItem>(new BufferItemComparer());
             cts = new CancellationTokenSource();
             ct = cts.Token;
 
-            service = CopyBufferService.Instance;
+            _service = service;
+            _service.ClibordNewMessage += _service_ClibordNewMessage;   
             CopyList = new List<BufferItem>();
             UpdateSortedSet();
-            Task.Run(() => CopyListRefreshTask()
-                , cts.Token);
+        }
+
+        private void _service_ClibordNewMessage(object sender, EventArgs e)
+        {
+            UpdateSortedSet();
         }
 
         #endregion
 
         #region Private Methods
 
-        private void CopyListRefreshTask()
-        {
-            while (true)
-            {
-                if (ct.IsCancellationRequested)
-                {
-                    break;
-                }
-
-                Thread.Sleep(100);
-                if (CopyList.Count == service.GetBufferedHistory().Count)
-                    continue;
-
-                UpdateSortedSet();
-            }
-        }
 
         private void UpdateSortedSet()
         {
-            foreach (var bufferItem in service.GetBufferedHistory())
+            foreach (var bufferItem in _service.GetBufferedHistory())
             {
                 _sortedSet.Add(bufferItem);
             }
             CopyList = _sortedSet.Select(r => r).ToList();
-            FirstItem = CopyList.Count > 0 ? CopyList.First(): new BufferItem(); 
-           // CopyList.Remove(_sortedSet.First());
+            FirstItem = CopyList.Count > 0 ? CopyList.First(): new BufferItem();
+
+            if (CopyList.Contains(_sortedSet.First()))
+            {
+                CopyList.Remove(_sortedSet.First());
+            }
+          
         
         }
 

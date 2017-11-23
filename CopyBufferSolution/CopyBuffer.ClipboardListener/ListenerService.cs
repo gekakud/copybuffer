@@ -13,6 +13,8 @@ namespace CopyBuffer.ClipboardListener
 {
     public class ListenerService : Form ,ICopyBufferService, IDisposable
     {
+        public event EventHandler ClibordNewMessage;
+
         #region Data Members
 
         private readonly ConcurrentBag<BufferItem> _copyBuffer;
@@ -188,10 +190,16 @@ namespace CopyBuffer.ClipboardListener
                 if (item.ItemType == BufferItemType.Text && item.TextContent != null)
                 {
                     _copyBuffer.Add(item);
+                    OnClibordNewMessage();
                 }
 
                 Debug.WriteLine((string) iData.GetData(DataFormats.Text));
             }
+        }
+
+        private void OnClibordNewMessage()
+        {
+            ClibordNewMessage?.Invoke(null, EventArgs.Empty);
         }
 
         #endregion

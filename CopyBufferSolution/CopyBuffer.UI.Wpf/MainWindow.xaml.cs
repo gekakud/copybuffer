@@ -15,10 +15,11 @@ namespace CopyBuffer.Ui.Wpf
             InitializeComponent();
         }
 
-        public MainWindow(ICopyBufferService p_bufferService)
+        public MainWindow(ICopyBufferService pBufferService)
         {
             InitializeComponent();
-            BufferService = p_bufferService;
+            BufferService = pBufferService;
+            DataContext = new ListViewModel(BufferService);
 
             StateChanged -= MainWindowStateChanged;
             Deactivated -= MainWindow_Deactivated;

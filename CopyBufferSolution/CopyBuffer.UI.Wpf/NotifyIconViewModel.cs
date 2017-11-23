@@ -20,10 +20,10 @@ namespace CopyBuffer.Ui.Wpf
         private readonly ICopyBufferService _listenerService;
         public NotifyIconViewModel()
         {
-            _bufferService = CopyBufferService.Instance;
-            _bufferService.Start();
+            //_bufferService = CopyBufferService.Instance;
+            //_bufferService.Start();
             _listenerService = ListenerService.Instance;
-           // _listenerService.Start();
+            _listenerService.Start();
             ShowWindowCommand = new Command(ShowWindowInternal);
             HideWindowCommand = new Command(HideWindowInternal);
             ExitApplicationCommand = new Command(ExitApplicationInternal);

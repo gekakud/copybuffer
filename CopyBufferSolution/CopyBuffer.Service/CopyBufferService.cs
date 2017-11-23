@@ -27,6 +27,8 @@ namespace CopyBuffer.Service
         private static readonly ICopyBufferService instance = new CopyBufferService();
         private ClipboardWrapper clipboardWrapper;
 
+        public event EventHandler ClibordNewMessage;
+
         private CopyBufferService()
         {
             clipboardWrapper = new ClipboardWrapper();
