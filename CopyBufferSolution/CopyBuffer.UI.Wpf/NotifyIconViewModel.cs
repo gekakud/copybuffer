@@ -64,7 +64,6 @@ namespace CopyBuffer.Ui.Wpf
 
         public void Dispose()
         {
-            _bufferService?.Dispose();
             _listenerService.Dispose();
             _keyEventHandler.UnsubscribeFromEvent();
         }

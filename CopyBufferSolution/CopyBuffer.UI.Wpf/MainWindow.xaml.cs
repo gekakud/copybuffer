@@ -9,7 +9,7 @@ namespace CopyBuffer.Ui.Wpf
     public partial class MainWindow : Window
     {
         public ICopyBufferService BufferService { get; set; }
-        
+
         public MainWindow()
         {
             InitializeComponent();
@@ -27,7 +27,14 @@ namespace CopyBuffer.Ui.Wpf
 
             StateChanged += MainWindowStateChanged;
             Deactivated += MainWindow_Deactivated;
+            Closing += MainWindow_Closing;
             Closed += MainWindow_Closed;
+        }
+
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            e.Cancel = true;
+            this.Hide();
         }
 
         private void MainWindow_Closed(object sender, System.EventArgs e)
