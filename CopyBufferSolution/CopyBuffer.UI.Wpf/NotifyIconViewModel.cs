@@ -14,7 +14,6 @@ namespace CopyBuffer.Ui.Wpf
 
         private readonly KeyEventHandler _keyEventHandler;
 
-        // MEF DI ??[Import]
         private readonly ICopyBufferService _bufferService;
 
         public NotifyIconViewModel()

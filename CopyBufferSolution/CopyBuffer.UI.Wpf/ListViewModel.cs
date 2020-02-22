@@ -72,7 +72,7 @@ namespace CopyBuffer.Ui.Wpf
                     break;
                 }
 
-                Thread.Sleep(100);
+                Thread.Sleep(200);
                 if (CopyList.Count == service.GetBufferedHistory().Count)
                     continue;
 

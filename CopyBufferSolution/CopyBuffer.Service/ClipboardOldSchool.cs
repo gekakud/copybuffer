@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using CopyBuffer.Service.Shared;
@@ -61,48 +63,75 @@ namespace CopyBuffer.Service
             return data;
         }
 
-        public static BitmapImage GetImage()
+        public static bool IsImageAvailiable()
         {
             if (!IsClipboardFormatAvailable(CF_DIBV5))
-                return null;
-            
-            BitmapImage image = null;
-//            if (!Clipboard.ContainsImage()) return image;
-//
-//            var t = new Thread((ThreadStart)(() => {
-//                var encoder = new JpegBitmapEncoder();
-//                var memoryStream = new MemoryStream();
-//                var bImg = new BitmapImage();
-//
-//                encoder.Frames.Add(BitmapFrame.Create(Clipboard.GetImage()));
-//                encoder.Save(memoryStream);
-//
-//                memoryStream.Position = 0;
-//                bImg.BeginInit();
-//                bImg.StreamSource = memoryStream;
-//                bImg.EndInit();
-//
-//                memoryStream.Close();
-//                image = bImg;
-//            }));
-//
-//            t.SetApartmentState(ApartmentState.MTA);
-//            t.Start();
-//            t.Join();
+                return false;
 
-            return image;
+            return Clipboard.ContainsImage();
         }
 
-        public static BitmapImage ToImage(byte[] array)
+        public static KeyValuePair<int, string> GetImage(List<int> existingImagesHashes)
         {
-            using (var ms = new System.IO.MemoryStream(array))
+            var newKeyValue = new KeyValuePair<int, string>(0, "");
+
+            if (!IsClipboardFormatAvailable(CF_DIBV5))
+                return newKeyValue;
+            
+            if (!Clipboard.ContainsImage()) return newKeyValue;
+
+            var t = new Thread(() =>
             {
-                var image = new BitmapImage();
-                image.BeginInit();
-                image.CacheOption = BitmapCacheOption.OnLoad; // here
-                image.StreamSource = ms;
-                image.EndInit();
-                return image;
+                using (var memoryStream = new MemoryStream())
+                {
+                    var source = Clipboard.GetImage();
+                    if (source != null)
+                    {
+                        var encoder = new JpegBitmapEncoder();
+                        var encoder2 = new JpegBitmapEncoder();
+                        encoder2.Frames.Add(BitmapFrame.Create(source));
+                        encoder2.Save(memoryStream);
+
+                        int hashByMemstream = ComputeHash(memoryStream.ToArray());
+                        if (!existingImagesHashes.Contains(hashByMemstream))
+                        {
+                            encoder.Frames.Add(BitmapFrame.Create(source));
+                            var path = Environment.CurrentDirectory + DateTime.Now.Ticks + ".png";
+                            using (var fileStream = new FileStream(path, System.IO.FileMode.Create))
+                            {
+                                encoder.Save(fileStream);
+                            }
+
+                            newKeyValue = new KeyValuePair<int, string>(hashByMemstream, path);
+                        }
+                    }
+                }
+            });
+
+            t.SetApartmentState(ApartmentState.STA);
+            t.IsBackground = false;
+            t.Start();
+            t.Join();
+
+            return newKeyValue;
+        }
+
+        public static int ComputeHash(params byte[] data)
+        {
+            unchecked
+            {
+                const int p = 16777619;
+                int hash = (int)2166136261;
+
+                for (int i = 0; i < 500; i++)
+                    hash = (hash ^ data[i]) * p;
+
+                hash += hash << 13;
+                hash ^= hash >> 7;
+                hash += hash << 3;
+                hash ^= hash >> 17;
+                hash += hash << 5;
+                return hash;
             }
         }
     }

@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
 using AsyncWindowsClipboard;
 
 namespace CopyBuffer.Service
@@ -24,14 +24,14 @@ namespace CopyBuffer.Service
             _clipboardService.SetTextAsync(p_text);
         }
 
-        public BitmapImage GetImage()
+        public KeyValuePair<int, string> GetImage(List<int> existingImagesHashes)
         {
-            return ClipboardOldSchool.GetImage();
+            return ClipboardOldSchool.GetImage(existingImagesHashes);
         }
 
-        public void SetImage(BitmapImage p_image)
-        {
-            var fff = p_image;
-        }
+        //public void SetImage(BitmapImage p_image)
+        //{
+        //    var fff = p_image;
+        //}
     }
 }
