@@ -39,7 +39,7 @@ namespace CopyBuffer.Ui.Wpf
 
                 service.SetItemToClipboard(_selectedItem);
                 
-                Application.Current.MainWindow.Close();
+                Application.Current.MainWindow?.Close();
             }
         }
 
@@ -60,8 +60,7 @@ namespace CopyBuffer.Ui.Wpf
 
             CopyList = new List<BufferItem>();
             UpdateSortedSet();
-            Task.Run(() => CopyListRefreshTask()
-                , cts.Token);
+            Task.Run(CopyListRefreshTask, cts.Token);
         }
 
         private void CopyListRefreshTask()
