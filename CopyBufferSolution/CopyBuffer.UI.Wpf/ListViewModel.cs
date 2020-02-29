@@ -66,7 +66,6 @@ namespace CopyBuffer.Ui.Wpf
             if (CopyList.Count == service.GetItemsCount())
             {
                 return;
-
             }
 
             UpdateSortedSet();
@@ -83,6 +82,7 @@ namespace CopyBuffer.Ui.Wpf
 
         public void Dispose()
         {
+            timer.Dispose();
         }
     }
 

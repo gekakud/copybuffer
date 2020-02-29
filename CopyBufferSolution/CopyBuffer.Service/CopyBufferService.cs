@@ -17,10 +17,12 @@ namespace CopyBuffer.Service
 
         private readonly ConcurrentBag<BufferItem> _copyHistory;
         private bool IsServiceRunning;
-        private readonly Task _clipboardMonitoring;
         private readonly CancellationTokenSource _tokenSource;
         private CancellationToken ct;
-        
+
+        private Timer timer;
+
+        //singleton
         private static readonly ICopyBufferService instance = new CopyBufferService();
         private ClipboardWrapper clipboardWrapper;
 
@@ -30,19 +32,17 @@ namespace CopyBuffer.Service
             _copyHistory = new ConcurrentBag<BufferItem>();
             _tokenSource = new CancellationTokenSource();
             ct = _tokenSource.Token;
-            _clipboardMonitoring = new Task(MonitorClip, ct, TaskCreationOptions.LongRunning);
         }
 
-        private void MonitorClip()
+        private void MonitorClip(object o)
         {
             var itemStr = string.Empty;
 
-            while (true)
-            {
+            
                 if (ct.IsCancellationRequested)
                 {
                     IsServiceRunning = false;
-                    break;
+                    return;
                 }
 
                 try
@@ -51,7 +51,7 @@ namespace CopyBuffer.Service
 
                     if (itemStr == null)
                     {
-                        continue;
+                        return;
                     }
 
                     var itemNotYetInhistory = _copyHistory.Count(e =>
@@ -60,7 +60,7 @@ namespace CopyBuffer.Service
 
                     if (!itemNotYetInhistory)
                     {
-                        continue;
+                        return;
                     }
 
                     if (itemNotYetInhistory)
@@ -71,23 +71,20 @@ namespace CopyBuffer.Service
                             TimeStamp = DateTime.Now,
                             ItemType = BufferItemType.Text
                         });
-                        continue;
+                        return;
                     }
                 }
-                catch (Exception exe)
+                catch (Exception exception)
                 {
                     //TODO need proper handling
                 }
-
-                Thread.Sleep(300);
-            }
         }
 
         public void Start()
         {
             if (IsServiceRunning) return;
             IsServiceRunning = true;
-            _clipboardMonitoring.Start();
+            timer = new Timer(MonitorClip, null, 0, 300);
         }
 
         public void Stop()
@@ -99,8 +96,9 @@ namespace CopyBuffer.Service
             try
             {
                 _tokenSource.Cancel();
+                timer.Dispose();
             }
-            catch (Exception)
+            catch (Exception exception)
             {
                 //TODO need proper handling
             }
@@ -141,7 +139,7 @@ namespace CopyBuffer.Service
 
         public void Dispose()
         {
-            _clipboardMonitoring?.Dispose();
+            timer?.Dispose();
             _tokenSource?.Dispose();
         }
     }
