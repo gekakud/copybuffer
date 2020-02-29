@@ -188,3 +188,5 @@ GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
 /CopyBufferSolution/.vs/CopyBuffer/v16/Server/sqlite3
+*.nupkg
+/CopyBufferSolution/packages/

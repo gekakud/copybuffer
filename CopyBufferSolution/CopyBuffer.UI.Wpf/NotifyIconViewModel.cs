@@ -24,7 +24,7 @@ namespace CopyBuffer.Ui.Wpf
             ShowWindowCommand = new Command(ShowWindowInternal);
             HideWindowCommand = new Command(HideWindowInternal);
             ExitApplicationCommand = new Command(ExitApplicationInternal);
-
+            
             _keyEventHandler = new KeyEventHandler(ShowWindowInternal);
         }
 
