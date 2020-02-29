@@ -10,6 +10,7 @@ namespace CopyBuffer.Service.Shared
         void ClearBufferHistory();
 
         List<BufferItem> GetBufferedHistory();
+        int GetItemsCount();
         void SetItemToClipboard(BufferItem p_item);
     }
 }

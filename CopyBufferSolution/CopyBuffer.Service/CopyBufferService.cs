@@ -20,7 +20,7 @@ namespace CopyBuffer.Service
         private readonly Task _clipboardMonitoring;
         private readonly CancellationTokenSource _tokenSource;
         private CancellationToken ct;
-
+        
         private static readonly ICopyBufferService instance = new CopyBufferService();
         private ClipboardWrapper clipboardWrapper;
 
@@ -36,7 +36,6 @@ namespace CopyBuffer.Service
         private void MonitorClip()
         {
             var itemStr = string.Empty;
-            var itemImg = new KeyValuePair<int, string>?();
 
             while (true)
             {
@@ -49,42 +48,30 @@ namespace CopyBuffer.Service
                 try
                 {
                     itemStr = clipboardWrapper.GetText();
-                    var listOfHashes = _copyHistory.Select(bi => bi.ImageContent.Key).ToList();
-                    itemImg = clipboardWrapper.GetImage(listOfHashes);
 
-                    if (itemStr == null && itemImg.Value.Key == 0)
+                    if (itemStr == null)
                     {
                         continue;
                     }
 
-                    var item = new BufferItem
-                    {
-                        TextContent = itemStr,
-                        ImageContent = itemImg.Value.Key == 0 ? new KeyValuePair<int, string>() : itemImg.Value,
-                        TimeStamp = DateTime.Now,
-                        ItemType = itemStr == null ? BufferItemType.Image:BufferItemType.Text
-                    };
+                    var itemNotYetInhistory = _copyHistory.Count(e =>
+                                              e.TextContent != null &&
+                                              e.TextContent.Equals(itemStr)) == 0;
 
-                    var isTextItemExist = item.TextContent != null && _copyHistory.Count(e =>
-                                              e.ItemType == BufferItemType.Text && e.TextContent != null &&
-                                              e.TextContent.Equals(item.TextContent)) == 0;
-
-                    if (item.ItemType == BufferItemType.Text && isTextItemExist)
+                    if (!itemNotYetInhistory)
                     {
-                        _copyHistory.Add(item);
                         continue;
                     }
 
-                    var isImageItemExist = _copyHistory.Count(
-                                               e =>
-                                                   e.ItemType == BufferItemType.Image && e.ImageContent.Key != 0 &&
-                                                   e.ImageContent.Key == item.ImageContent.Key) == 0;
-
-                    if (item.ItemType == BufferItemType.Image && isImageItemExist)
-
+                    if (itemNotYetInhistory)
                     {
-                        _copyHistory.Add(item);
-
+                        _copyHistory.Add(new BufferItem
+                        {
+                            TextContent = itemStr,
+                            TimeStamp = DateTime.Now,
+                            ItemType = BufferItemType.Text
+                        });
+                        continue;
                     }
                 }
                 catch (Exception exe)
@@ -122,6 +109,11 @@ namespace CopyBuffer.Service
         public List<BufferItem> GetBufferedHistory()
         {
             return _copyHistory.ToList();
+        }
+
+        public int GetItemsCount()
+        {
+            return _copyHistory.Count;
         }
 
         public void ClearBufferHistory()
