@@ -21,14 +21,16 @@
             <DataTemplate>
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="4" />
-                        <ColumnDefinition Width="20" />
+                        <ColumnDefinition Width="2" />
+                        <ColumnDefinition Width="18" />
+                        <ColumnDefinition Width="10" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="2" Style="{StaticResource MaterialDesignBody1TextBlock}" Text="{Binding TextContent}"
-								   FontSize="14" HorizontalAlignment="Stretch" VerticalAlignment="Center" TextAlignment="Left" />
+                    <TextBlock Grid.Column="3" Style="{StaticResource MaterialDesignBody1TextBlock}" Text="{Binding TextContent}"
+								   FontSize="14" HorizontalAlignment="Stretch" VerticalAlignment="Center" TextAlignment="Left"/>
                     <StackPanel Grid.Column="1" Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="{Binding ItemType,Converter={StaticResource ItemTypeTostringConverer}}"/>
+                        <materialDesign:PackIcon Kind="{Binding ItemType,Converter={StaticResource ItemTypeTostringConverer}}"
+                                                 VerticalAlignment="Center" BorderBrush="Black" BorderThickness="1"/>
                     </StackPanel>
                 </Grid>
             </DataTemplate>
