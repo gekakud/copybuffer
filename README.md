@@ -1,27 +1,15 @@
-# README #
+# WHAT IS COPYBUFFER #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+When you copy or cut text in Windows, it's copied by CopyBuffer creating clipboard history. Later you can view your clipboard history and paste from it.
 
-### What is this repository for? ###
+# HOWTO #
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
-
-### How do I get set up? ###
-
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+Download Windows version from releases, install it, run it.
+To view your clipboard history, tap the Ctrl + Q keyboard shortcut - CopyBuffer panel will open that will list all text items(images will be added also later), that you copied to your clipboard. Scroll through it and click an item you want to paste again.
 
 ### Contribution guidelines ###
 
-* Writing tests
-* Code review
-* Other guidelines
+* Implementng new features
 
 ### Who do I talk to? ###
 
