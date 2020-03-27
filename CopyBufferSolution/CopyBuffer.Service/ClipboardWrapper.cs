@@ -5,13 +5,26 @@ using AsyncWindowsClipboard;
 
 namespace CopyBuffer.Service
 {
+    /// <summary>
+    /// Wrapping actual clipboard service!
+    /// </summary>
     internal class ClipboardWrapper
     {
         readonly WindowsClipboardService _clipboardService = new WindowsClipboardService(TimeSpan.FromMilliseconds(50));
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         private async Task<string> GetTextInternal()
         {
-            return await _clipboardService.GetTextAsync();
+            try
+            {
+                return await _clipboardService.GetTextAsync();
+            }
+            catch (Exception exception)
+            {
+                Logger.Error(exception);
+            }
+
+            return await Task.Run(() => "");
         }
 
         public string GetText()
@@ -21,7 +34,14 @@ namespace CopyBuffer.Service
 
         public void SetText(string p_text)
         {
-            _clipboardService.SetTextAsync(p_text);
+            try
+            {
+                _clipboardService.SetTextAsync(p_text);
+            }
+            catch (Exception exception)
+            {
+                Logger.Error(exception);
+            }
         }
 
         public KeyValuePair<int, string> GetImage(List<int> existingImagesHashes)

@@ -3,17 +3,21 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using CopyBuffer.Service.Shared;
 
 namespace CopyBuffer.Service
 {
     public class CopyBufferService:ICopyBufferService
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         public static ICopyBufferService Instance
         {
             get { return instance; }
         }
+
+        //singleton
+        private static readonly ICopyBufferService instance = new CopyBufferService();
 
         private readonly ConcurrentBag<BufferItem> _copyHistory;
         private bool IsServiceRunning;
@@ -22,8 +26,6 @@ namespace CopyBuffer.Service
 
         private Timer timer;
 
-        //singleton
-        private static readonly ICopyBufferService instance = new CopyBufferService();
         private ClipboardWrapper clipboardWrapper;
 
         private CopyBufferService()
@@ -38,7 +40,6 @@ namespace CopyBuffer.Service
         {
             var itemStr = string.Empty;
 
-            
                 if (ct.IsCancellationRequested)
                 {
                     IsServiceRunning = false;
@@ -71,12 +72,14 @@ namespace CopyBuffer.Service
                             TimeStamp = DateTime.Now,
                             ItemType = BufferItemType.Text
                         });
+                        Logger.Info("Item added");
                         return;
                     }
                 }
                 catch (Exception exception)
                 {
                     //TODO need proper handling
+                    Logger.Error(exception);
                 }
         }
 
@@ -101,6 +104,7 @@ namespace CopyBuffer.Service
             catch (Exception exception)
             {
                 //TODO need proper handling
+                Logger.Error(exception);
             }
         }
 

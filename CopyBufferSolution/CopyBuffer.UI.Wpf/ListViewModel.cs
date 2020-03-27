@@ -13,6 +13,8 @@ namespace CopyBuffer.Ui.Wpf
     public class ListViewModel: BaseViewModel,IDisposable
     {
         public Action CloseAction { get; set; }
+
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private SortedSet<BufferItem> _sortedSet;
         private ICopyBufferService service;
         private bool _firstSet = true;
@@ -59,6 +61,19 @@ namespace CopyBuffer.Ui.Wpf
             CopyList = new List<BufferItem>();
             timer = new Timer(CopyListRefreshTask, null, 0, 200);
             UpdateSortedSet();
+        }
+
+        private void InitLogger()
+        {
+            var config = new NLog.Config.LoggingConfiguration();
+            // Targets where to log to: File
+            var logfile = new NLog.Targets.FileTarget("logfile") { FileName = "log.txt" };
+
+            // Rules for mapping loggers to targets            
+            config.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, logfile);
+
+            // Apply config           
+            NLog.LogManager.Configuration = config;
         }
 
         private void CopyListRefreshTask(object o)
