@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using CopyBuffer.Service;
 using CopyBuffer.Service.Shared;
@@ -63,21 +62,15 @@ namespace CopyBuffer.Ui.Wpf
             UpdateSortedSet();
         }
 
-        private void InitLogger()
-        {
-            var config = new NLog.Config.LoggingConfiguration();
-            // Targets where to log to: File
-            var logfile = new NLog.Targets.FileTarget("logfile") { FileName = "log.txt" };
-
-            // Rules for mapping loggers to targets            
-            config.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, logfile);
-
-            // Apply config           
-            NLog.LogManager.Configuration = config;
-        }
-
         private void CopyListRefreshTask(object o)
         {
+            if (service.HistoryWasCleared)
+            {
+                CopyList.Clear();
+                _sortedSet.Clear();
+                service.HistoryWasCleared = false;
+            }
+
             if (CopyList.Count == service.GetItemsCount())
             {
                 return;

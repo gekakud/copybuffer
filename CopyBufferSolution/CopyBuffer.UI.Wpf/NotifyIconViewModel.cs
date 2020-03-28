@@ -10,10 +10,10 @@ namespace CopyBuffer.Ui.Wpf
     {
         public Command ShowWindowCommand { get; private set; }
         public Command HideWindowCommand { get; private set; }
+        public Command ClearHistoryCommand { get; private set; }
         public Command ExitApplicationCommand { get; private set; }
 
         private readonly KeyEventHandler _keyEventHandler;
-
         private readonly ICopyBufferService _bufferService;
 
         public NotifyIconViewModel()
@@ -23,6 +23,7 @@ namespace CopyBuffer.Ui.Wpf
             
             ShowWindowCommand = new Command(ShowWindowInternal);
             HideWindowCommand = new Command(HideWindowInternal);
+            ClearHistoryCommand = new Command(ClearHistoryInternal);
             ExitApplicationCommand = new Command(ExitApplicationInternal);
             
             _keyEventHandler = new KeyEventHandler(ShowWindowInternal);
@@ -42,6 +43,11 @@ namespace CopyBuffer.Ui.Wpf
             {
                 Application.Current.MainWindow.Show();
             }
+        }
+
+        private void ClearHistoryInternal()
+        {
+            _bufferService.ClearBufferHistory();
         }
 
         private void HideWindowInternal()

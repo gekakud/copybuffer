@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using CopyBuffer.Service.Shared;
+using NLog.Fluent;
 
 namespace CopyBuffer.Service
 {
@@ -19,10 +20,12 @@ namespace CopyBuffer.Service
         //singleton
         private static readonly ICopyBufferService instance = new CopyBufferService();
 
-        private readonly ConcurrentBag<BufferItem> _copyHistory;
+        private ConcurrentBag<BufferItem> _copyHistory;
         private bool IsServiceRunning;
         private readonly CancellationTokenSource _tokenSource;
         private CancellationToken ct;
+
+        public bool HistoryWasCleared { get; set; }
 
         private Timer timer;
 
@@ -30,10 +33,22 @@ namespace CopyBuffer.Service
 
         private CopyBufferService()
         {
+            InitLogger();
             clipboardWrapper = new ClipboardWrapper();
             _copyHistory = new ConcurrentBag<BufferItem>();
             _tokenSource = new CancellationTokenSource();
             ct = _tokenSource.Token;
+        }
+
+        private void InitLogger()
+        {
+            var config = new NLog.Config.LoggingConfiguration();
+            // Targets where to log to: File
+            var logfile = new NLog.Targets.FileTarget("logfile") { FileName = "log.txt" };
+            // Rules for mapping loggers to targets            
+            config.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, logfile);
+            // Apply config           
+            NLog.LogManager.Configuration = config;
         }
 
         private void MonitorClip(object o)
@@ -88,6 +103,7 @@ namespace CopyBuffer.Service
             if (IsServiceRunning) return;
             IsServiceRunning = true;
             timer = new Timer(MonitorClip, null, 0, 300);
+            Logger.Info("Service running");
         }
 
         public void Stop()
@@ -122,9 +138,11 @@ namespace CopyBuffer.Service
         {
             foreach (var bufferItem in _copyHistory)
             {
-                var item = new BufferItem();
-                _copyHistory.TryTake(out item);
+                _copyHistory = new ConcurrentBag<BufferItem>();
             }
+
+            HistoryWasCleared = true;
+            Logger.Info("History cleared");
         }
 
         public void SetItemToClipboard(BufferItem p_item)

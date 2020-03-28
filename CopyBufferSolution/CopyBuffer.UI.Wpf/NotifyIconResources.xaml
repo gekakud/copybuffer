@@ -6,6 +6,7 @@
     <ContextMenu x:Shared="false" x:Key="SysTrayMenu">
         <MenuItem Header="Show Buffer window" Command="{Binding ShowWindowCommand}" />
         <MenuItem Header="Hide Buffer window" Command="{Binding HideWindowCommand}" />
+        <MenuItem Header="Clear history" Command="{Binding ClearHistoryCommand}" />
         <Separator />
         <MenuItem Header="Exit" Command="{Binding ExitApplicationCommand}" />
     </ContextMenu>
