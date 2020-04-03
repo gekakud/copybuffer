@@ -190,3 +190,5 @@ ModelManifest.xml
 /CopyBufferSolution/.vs/CopyBuffer/v16/Server/sqlite3
 *.nupkg
 /CopyBufferSolution/packages/
+/CopyBufferSolution/CopyBuffer.UI.Wpf/InnoInstallerScript/Output/CopyBufferSetup1_1.exe
+/CopyBufferSolution/CopyBuffer.UI.Wpf/InnoInstallerScript/Output/CopyBufferSetup1_0.exe

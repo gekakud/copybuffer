@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using AsyncWindowsClipboard;
 
@@ -43,15 +42,5 @@ namespace CopyBuffer.Service
                 Logger.Error(exception);
             }
         }
-
-        public KeyValuePair<int, string> GetImage(List<int> existingImagesHashes)
-        {
-            return ClipboardOldSchool.GetImage(existingImagesHashes);
-        }
-
-        //public void SetImage(BitmapImage p_image)
-        //{
-        //    var fff = p_image;
-        //}
     }
 }
