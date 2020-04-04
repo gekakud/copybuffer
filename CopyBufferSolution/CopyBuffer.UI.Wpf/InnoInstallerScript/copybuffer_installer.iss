@@ -6,7 +6,7 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{9B875426-DE4C-4C53-9DB1-B67084443308}
 AppName=CopyBuffer
-AppVersion=1.0
+AppVersion=1.2
 
 AppPublisher=geka
 AppPublisherURL=http://www.Copy-Buffer.com/
