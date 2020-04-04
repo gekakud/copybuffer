@@ -1,35 +1,15 @@
 ﻿using System;
-using System.Threading.Tasks;
 using AsyncWindowsClipboard;
 
 namespace CopyBuffer.Service
 {
     /// <summary>
-    /// Wrapping actual clipboard service!
+    /// Use Windows native clipboard to set(paste) text to clipboard
     /// </summary>
-    internal class ClipboardWrapper
+    internal class NativeClipboardSetter
     {
         readonly WindowsClipboardService _clipboardService = new WindowsClipboardService(TimeSpan.FromMilliseconds(50));
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-
-        private async Task<string> GetTextInternal()
-        {
-            try
-            {
-                return await _clipboardService.GetTextAsync();
-            }
-            catch (Exception exception)
-            {
-                Logger.Error(exception);
-            }
-
-            return await Task.Run(() => "");
-        }
-
-        public string GetText()
-        {
-            return GetTextInternal().Result;
-        }
 
         public void SetText(string p_text)
         {

@@ -24,17 +24,21 @@ namespace CopyBuffer.Service
         private bool IsServiceRunning;
         private readonly CancellationTokenSource _tokenSource;
         private CancellationToken ct;
+        private string LastItemAdded = String.Empty;
 
         public bool HistoryWasCleared { get; set; }
 
         private Timer timer;
 
-        private ClipboardWrapper clipboardWrapper;
+        private NativeClipboardSetter _nativeClipboardSetter;
+        private SharpClipWrapper sharpClipWrapper;
 
         private CopyBufferService()
         {
             InitLogger();
-            clipboardWrapper = new ClipboardWrapper();
+            _nativeClipboardSetter = new NativeClipboardSetter();
+            sharpClipWrapper = new SharpClipWrapper();
+
             _copyHistory = new ConcurrentBag<BufferItem>();
             _tokenSource = new CancellationTokenSource();
             ct = _tokenSource.Token;
@@ -63,9 +67,9 @@ namespace CopyBuffer.Service
 
                 try
                 {
-                    itemStr = clipboardWrapper.GetText();
+                    itemStr = sharpClipWrapper.MostRecentClipboardText;
 
-                    if (itemStr == null)
+                    if (itemStr == null || LastItemAdded == itemStr)
                     {
                         return;
                     }
@@ -87,6 +91,7 @@ namespace CopyBuffer.Service
                             TimeStamp = DateTime.Now,
                             ItemType = BufferItemType.Text
                         });
+                        LastItemAdded = itemStr;
                         Logger.Info("Item added");
                         return;
                     }
@@ -150,17 +155,18 @@ namespace CopyBuffer.Service
             switch (p_item.ItemType)
             {
                 case BufferItemType.Text:
-                    clipboardWrapper.SetText(p_item.TextContent);
+                    _nativeClipboardSetter.SetText(p_item.TextContent);
                     break;
 
                 case BufferItemType.Image:
-                    //clipboardWrapper.SetImage(p_item.ImageContent);
+                    
                     break;
             }
         }
 
         public void Dispose()
         {
+            sharpClipWrapper?.Dispose();
             timer?.Dispose();
             _tokenSource?.Dispose();
         }
