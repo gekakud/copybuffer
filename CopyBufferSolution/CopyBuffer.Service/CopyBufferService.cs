@@ -69,32 +69,33 @@ namespace CopyBuffer.Service
                 {
                     itemStr = sharpClipWrapper.MostRecentClipboardText;
 
-                    if (itemStr == null || LastItemAdded == itemStr)
+                    if (string.IsNullOrEmpty(itemStr) || LastItemAdded == itemStr)
                     {
                         return;
                     }
 
-                    var itemNotYetInhistory = _copyHistory.Count(e =>
+                    var suchItemAlreadyExist = _copyHistory.Count(e =>
                                               e.TextContent != null &&
-                                              e.TextContent.Equals(itemStr)) == 0;
+                                              e.TextContent.Equals(itemStr)) > 0;
 
-                    if (!itemNotYetInhistory)
+                    //remove than add - so the item will appear at top of a list!
+                    if (suchItemAlreadyExist)
                     {
-                        return;
+                        var b = new BufferItem();
+                        b = _copyHistory.First(e => e.TextContent != null &&
+                                                    e.TextContent.Equals(itemStr));
+                        _copyHistory.TryTake(out b);
                     }
 
-                    if (itemNotYetInhistory)
+                    _copyHistory.Add(new BufferItem
                     {
-                        _copyHistory.Add(new BufferItem
-                        {
-                            TextContent = itemStr,
-                            TimeStamp = DateTime.Now,
-                            ItemType = BufferItemType.Text
-                        });
-                        LastItemAdded = itemStr;
-                        Logger.Info("Item added");
-                        return;
-                    }
+                        TextContent = itemStr,
+                        TimeStamp = DateTime.Now,
+                        ItemType = BufferItemType.Text
+                    });
+
+                    LastItemAdded = itemStr;
+                    Logger.Info("Item added");
                 }
                 catch (Exception exception)
                 {
