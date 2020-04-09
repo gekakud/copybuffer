@@ -12,10 +12,7 @@ namespace CopyBuffer.Service
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
-        public static ICopyBufferService Instance
-        {
-            get { return instance; }
-        }
+        public static ICopyBufferService Instance => instance;
 
         //singleton
         private static readonly ICopyBufferService instance = new CopyBufferService();
@@ -23,10 +20,11 @@ namespace CopyBuffer.Service
         private ConcurrentBag<BufferItem> _copyHistory;
         private bool IsServiceRunning;
         private readonly CancellationTokenSource _tokenSource;
-        private CancellationToken ct;
-        private string LastItemAdded = String.Empty;
+        private CancellationToken cancellationToken;
+        private string LastItemAdded = string.Empty;
 
         public bool HistoryWasCleared { get; set; }
+        public bool RefreshUiList { get; set; }
 
         private Timer timer;
 
@@ -41,7 +39,7 @@ namespace CopyBuffer.Service
 
             _copyHistory = new ConcurrentBag<BufferItem>();
             _tokenSource = new CancellationTokenSource();
-            ct = _tokenSource.Token;
+            cancellationToken = _tokenSource.Token;
         }
 
         private void InitLogger()
@@ -55,11 +53,16 @@ namespace CopyBuffer.Service
             NLog.LogManager.Configuration = config;
         }
 
+        object locker = new object();
+
         private void MonitorClip(object o)
         {
-            var itemStr = string.Empty;
+            //check possible race condition
+            lock (locker)
+            {
+                var itemStr = string.Empty;
 
-                if (ct.IsCancellationRequested)
+                if (cancellationToken.IsCancellationRequested)
                 {
                     IsServiceRunning = false;
                     return;
@@ -69,22 +72,20 @@ namespace CopyBuffer.Service
                 {
                     itemStr = sharpClipWrapper.MostRecentClipboardText;
 
-                    if (string.IsNullOrEmpty(itemStr) || LastItemAdded == itemStr)
+                    if (LastItemAdded == itemStr || string.IsNullOrEmpty(itemStr))
                     {
                         return;
                     }
 
-                    var suchItemAlreadyExist = _copyHistory.Count(e =>
-                                              e.TextContent != null &&
-                                              e.TextContent.Equals(itemStr)) > 0;
+                    BufferItem itemInHistory = _copyHistory.FirstOrDefault(e => e.TextContent == itemStr);
 
-                    //remove than add - so the item will appear at top of a list!
-                    if (suchItemAlreadyExist)
+                    //if item already exist - move it in top of list
+                    if (itemInHistory != null)
                     {
-                        var b = new BufferItem();
-                        b = _copyHistory.First(e => e.TextContent != null &&
-                                                    e.TextContent.Equals(itemStr));
-                        _copyHistory.TryTake(out b);
+                        itemInHistory.TimeStamp = DateTime.Now;
+                        LastItemAdded = itemStr;
+                        RefreshUiList = true;
+                        return;
                     }
 
                     _copyHistory.Add(new BufferItem
@@ -95,6 +96,7 @@ namespace CopyBuffer.Service
                     });
 
                     LastItemAdded = itemStr;
+                    RefreshUiList = true;
                     Logger.Info("Item added");
                 }
                 catch (Exception exception)
@@ -102,6 +104,7 @@ namespace CopyBuffer.Service
                     //TODO need proper handling
                     Logger.Error(exception);
                 }
+            }
         }
 
         public void Start()
@@ -148,6 +151,7 @@ namespace CopyBuffer.Service
             }
 
             HistoryWasCleared = true;
+            RefreshUiList = true;
             Logger.Info("History cleared");
         }
 

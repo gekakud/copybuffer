@@ -14,17 +14,17 @@ namespace CopyBuffer.Ui.Wpf
         public Action CloseAction { get; set; }
 
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        private SortedSet<BufferItem> _sortedSet;
+        private SortedSet<BufferItemUi> _sortedSet;
         private ICopyBufferService service;
         private bool _firstSet = true;
 
-        public List<BufferItem> CopyList
+        public List<BufferItemUi> CopyList
         {
             get { return _list; }
             set { SetProperty(ref _list, value); }
         }
 
-        public BufferItem SelectedItem
+        public BufferItemUi SelectedItem
         {
             get
             {
@@ -38,14 +38,19 @@ namespace CopyBuffer.Ui.Wpf
             {
                 _selectedItem = value;
 
-                service.SetItemToClipboard(_selectedItem);
+                service.SetItemToClipboard(new BufferItem
+                {
+                    TextContent = _selectedItem.TextContent,
+                    ItemType = BufferItemType.Text,
+                    TimeStamp = _selectedItem.TimeStamp
+                });
                 
                 Application.Current.MainWindow?.Close();
             }
         }
 
-        private List<BufferItem> _list;
-        private BufferItem _selectedItem;
+        private List<BufferItemUi> _list;
+        private BufferItemUi _selectedItem;
 
         private Timer timer;
 
@@ -53,11 +58,11 @@ namespace CopyBuffer.Ui.Wpf
         //how  I know when ListControl is disposed to cancel the task
         public ListViewModel()
         {
-            _sortedSet = new SortedSet<BufferItem>(new BufferItemComparer());
+            _sortedSet = new SortedSet<BufferItemUi>(new BufferItemComparer());
 
             service = CopyBufferService.Instance;
 
-            CopyList = new List<BufferItem>();
+            CopyList = new List<BufferItemUi>();
             timer = new Timer(CopyListRefreshTask, null, 0, 200);
             UpdateSortedSet();
         }
@@ -71,32 +76,40 @@ namespace CopyBuffer.Ui.Wpf
                 service.HistoryWasCleared = false;
             }
 
-            if (CopyList.Count == service.GetItemsCount())
+            if (service.RefreshUiList)
             {
-                return;
+                UpdateSortedSet();
+                service.RefreshUiList = false;
             }
-
-            UpdateSortedSet();
         }
 
         private void UpdateSortedSet()
         {
+            CopyList.Clear();
+            _sortedSet.Clear();
+
             foreach (var bufferItem in service.GetBufferedHistory())
             {
-                _sortedSet.Add(bufferItem);
+                _sortedSet.Add(new BufferItemUi
+                {
+                    ItemType = bufferItem.ItemType,
+                    TextContent = string.Copy(bufferItem.TextContent),
+                    TimeStamp = bufferItem.TimeStamp
+                });
             }
+
             CopyList = _sortedSet.Select(r => r).ToList();
         }
 
         public void Dispose()
         {
-            timer.Dispose();
+            timer?.Dispose();
         }
     }
 
-    public class BufferItemComparer : IComparer<BufferItem>
+    public class BufferItemComparer : IComparer<BufferItemUi>
     {
-        public int Compare(BufferItem x, BufferItem y)
+        public int Compare(BufferItemUi x, BufferItemUi y)
         {
             return y.TimeStamp.CompareTo(x.TimeStamp);
         }

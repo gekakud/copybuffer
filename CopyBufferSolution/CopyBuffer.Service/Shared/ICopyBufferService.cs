@@ -12,6 +12,7 @@ namespace CopyBuffer.Service.Shared
         List<BufferItem> GetBufferedHistory();
         int GetItemsCount();
         bool HistoryWasCleared { get; set; }
+        bool RefreshUiList { get; set; }
         void SetItemToClipboard(BufferItem p_item);
     }
 }
